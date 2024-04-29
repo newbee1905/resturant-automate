@@ -2,78 +2,47 @@
 
 ' Define interfaces for the Observer pattern
 interface Observer {
-	+update(item_name: String, state: String)
 }
 
 interface Subject {
-	+attach(observer: Observer)
-	+detach(observer: Observer)
-	+notify(item_name: String, state: String)
 }
 
 ' Define concrete classes for the Observer pattern
 class WaitStaffObserver implements Observer {
-	+update(item_name: String, state: String)
 }
 
 class KitchenStaffObserver implements Observer {
-	+update(item_name: String, state: String)
 }
 
 class OrderSubject implements Subject {
-	-observers: List<Observer>
-	+attach(observer: Observer)
-	+detach(observer: Observer)
-	+notify(item_name: String, state: String)
 }
 
 ' Define interfaces and classes for the State pattern for MenuItems
 interface ItemState {
-	+handle(context: OrderItemContext)
 }
 
-class WaitingToBeCooked implements ItemState {
-	+handle(context: OrderItemContext)
+class Queueing implements ItemState {
 }
 
 class Cooking implements ItemState {
-	+handle(context: OrderItemContext)
 }
 
 class Cooked implements ItemState {
-	+handle(context: OrderItemContext)
 }
 
-class ReadyForDelivery implements ItemState {
-	+handle(context: OrderItemContext)
+class Served implements ItemState {
 }
 
-' Define the OrderItemContext
 class OrderItemContext {
-	-state: ItemState
-	-subject: Subject
-	-menu_item: MenuItem
-	-note: String
-	+set_state(state: ItemState)
-	+request()
-	+notify_observers()
 }
 
-' Define Composite pattern for menu items
 abstract MenuItem {
-	-name: String
-	+get_price(): double
 }
 
 class SingleItem implements MenuItem {
-	-price: double
-	+get_price(): double
 }
 
 class ComboItem implements MenuItem {
-	-items: List<MenuItem>
-	+add_item(item: MenuItem)
-	+get_price(): double
 }
 
 ' Define user roles
@@ -87,9 +56,6 @@ class WaitStaff {
 }
 
 class Manager {
-	+check_order_analytics()
-	+check_crowded_times()
-	+update_menu_item()
 }
 
 class RegularUser {
@@ -119,20 +85,33 @@ User <|-- RegularUser
 
 ' Define Singleton for Analytics
 class Analytics {
-	-instance: Analytics
-	+get_instance(): Analytics
 }
 
 Analytics <-down- Manager
 
-class OrderItemContextFactory {
-	+create_order_item_context(menu_item: MenuItem, note: String): OrderItemContext
+class OrderFactory {
 }
 
-OrderItemContextFactory --> OrderItemContext
+OrderFactory --> Order
 
 ' Link WaitStaff to creating OrderItem
-WaitStaff --> OrderItemContextFactory : Creates
+WaitStaff --> OrderFactory : Creates
 
+Order -> OrderItemContext : contains
+
+interface OrderState {
+}
+
+class Reserving implements OrderState {
+}
+
+class Serving implements OrderState {
+}
+
+class Paid implements OrderState {
+}
+
+Order -> OrderState
 
 @enduml
+
