@@ -17,6 +17,9 @@ class KitchenStaffObserver implements Observer {
 class OrderSubject implements Subject {
 }
 
+class OrderItemSubject implements Subject {
+}
+
 ' Define interfaces and classes for the State pattern for MenuItems
 interface ItemState {
 }
@@ -36,17 +39,11 @@ class Served implements ItemState {
 class OrderItemContext {
 }
 
-abstract MenuItem {
-}
-
-class SingleItem implements MenuItem {
-}
-
-class ComboItem implements MenuItem {
+class MenuItem {
 }
 
 ' Define user roles
-abstract class User {
+abstract User {
 }
 
 class KitchenStaff {
@@ -67,15 +64,17 @@ KitchenStaffObserver -down-|> KitchenStaff
 
 ' Connect the menu items to the order and states
 OrderItemContext -left-> ItemState
-OrderItemContext -right-> OrderSubject
-OrderItemContext --> MenuItem : contains
+OrderItemContext -right-> OrderItemSubject
+OrderItemContext --> OrderItem: contains
+OrderItem --> MenuItem : include
 
-' Composite pattern relations
-MenuItem <|-- SingleItem
-MenuItem <|-- ComboItem
+Order --> OrderItem : contains
+
+Order -right-> OrderSubject
 
 ' Link Subject to Observers explicitly
-OrderSubject "1" -right-> "*" Observer : notifies >
+OrderSubject "1" -down-> "*" Observer : notifies >
+OrderItemSubject "1" -right-> "*" Observer : notifies >
 
 ' Composite pattern relations for user
 User <|-- WaitStaff
@@ -92,10 +91,10 @@ Analytics <-down- Manager
 class OrderFactory {
 }
 
-OrderFactory --> Order
+OrderFactory --> Order : Creates
 
 ' Link WaitStaff to creating OrderItem
-WaitStaff --> OrderFactory : Creates
+WaitStaff --> OrderFactory : Uses
 
 Order -> OrderItemContext : contains
 
@@ -108,10 +107,12 @@ class Reserving implements OrderState {
 class Serving implements OrderState {
 }
 
+class Paying implements OrderState {
+}
+
 class Paid implements OrderState {
 }
 
 Order -> OrderState
 
 @enduml
-
