@@ -2,6 +2,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
+from order import OrderItem
+
 @dataclass
 class OrderItemContext:
 	"""
@@ -15,9 +17,9 @@ class OrderItemContext:
 	A reference to the current state of the Context
 	"""
 
-	name: str
+	order_item: OrderItem
 	"""
-	Name of the menu item
+	Order Item details in Database
 	"""
 
 	def __post_init__(self) -> None:

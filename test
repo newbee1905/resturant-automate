@@ -1,0 +1,30 @@
+@startuml
+
+participant User
+participant System
+participant Database
+
+User -> System: Validation JWTs
+
+alt User JWT Valid
+
+else User JWT Invalid or not exist
+
+	User -> System: Request Login
+	System -> Database: Check User Credentials
+	Database --> System: User Credentials Valid
+
+	alt User Credentials Valid
+			System -> Database: Generate JWT Token
+			Database --> System: JWT Token Generated
+			System --> User: Send JWT Token
+	else User Credentials Invalid
+			System --> User: Notify Invalid Credentials
+			System --> User: Prompt for Registration
+			User -> System: Request for Registrations
+	end
+end
+
+@enduml
+
+

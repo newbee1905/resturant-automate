@@ -1,138 +1,44 @@
-from __future__ import annotations
-from abc import ABC, abstractmethod
-from random import randrange
-from typing import List
-from dataclasses import dataclass, field
-
-@dataclass
-class Subject(ABC):
-	"""
-	The Subject interface declares a set of methods for managing subscribers.
-	"""
-
-	@abstractmethod
-	def attach(self, observer: Observer) -> None:
-		"""
-		Attach an observer to the subject.
-		"""
-		pass
-
-	@abstractmethod
-	def detach(self, observer: Observer) -> None:
-		"""
-		Detach an observer from the subject.
-		"""
-		pass
-
-	@abstractmethod
-	def notify(self) -> None:
-		"""
-		Notify all observers about an event.
-		"""
-		pass
-
-@dataclass
-class ConcreteSubject(Subject):
-	"""
-	The Subject owns some important state and notifies observers when the state
-	changes.
-	"""
-
-	_state: int = None
-	"""
-	For the sake of simplicity, the Subject's state, essential to all
-	subscribers, is stored in this variable.
-	"""
-
-	_observers: List[Observer] = field(default_factory=list)
-	"""
-	List of subscribers. In real life, the list of subscribers can be stored
-	more comprehensively (categorized by event type, etc.).
-	"""
-
-	def attach(self, observer: Observer) -> None:
-		print("Subject: Attached an observer.")
-		self._observers.append(observer)
-
-	def detach(self, observer: Observer) -> None:
-		self._observers.remove(observer)
-
-	"""
-	The subscription management methods.
-	"""
-
-	def notify(self) -> None:
-		"""
-		Trigger an update in each subscriber.
-		"""
-
-		print("Subject: Notifying observers...")
-		for observer in self._observers:
-			observer.update(self)
-
-	def some_business_logic(self) -> None:
-		"""
-		Usually, the subscription logic is only a fraction of what a Subject can
-		really do. Subjects commonly hold some important business logic, that
-		triggers a notification method whenever something important is about to
-		happen (or after it).
-		"""
-
-		print("\nSubject: I'm doing something important.")
-		self._state = randrange(0, 10)
-
-		print(f"Subject: My state has just changed to: {self._state}")
-		self.notify()
-
-
-@dataclass
-class Observer(ABC):
-	"""
-	The Observer interface declares the update method, used by subjects.
-	"""
-
-	@abstractmethod
-	def update(self, subject: Subject) -> None:
-		"""
-		Receive update from subject.
-		"""
-		pass
-
-
-"""
-Concrete Observers react to the updates issued by the Subject they had been
-attached to.
-"""
-
-@dataclass
-class ConcreteObserverA(Observer):
-	def update(self, subject: Subject) -> None:
-		if subject._state < 3:
-			print("ConcreteObserverA: Reacted to the event")
-
-
-@dataclass
-class ConcreteObserverB(Observer):
-	def update(self, subject: Subject) -> None:
-		if subject._state == 0 or subject._state >= 2:
-			print("ConcreteObserverB: Reacted to the event")
-
+from user import RegularUser, KitchenStaff, WaitStaff, Manager
+from menu_item import MenuItem
 
 if __name__ == "__main__":
-	# The client code.
+	# Create an in-memory SQLite database
+	engine = create_engine('sqlite:///:memory:', echo=True)
 
-	subject = ConcreteSubject()
-	print(subject)
+	# Create the table schema
+	Base.metadata.create_all(engine)
 
-	observer_a = ConcreteObserverA()
-	subject.attach(observer_a)
+	# Create a session to interact with the database
+	Session = sessionmaker(bind=engine)
+	session = Session()
 
-	observer_b = ConcreteObserverB()
-	subject.attach(observer_b)
+	# Create instances of users
+	kitchen_staff_1 = KitchenStaff()
+	kitchen_staff_2 = KitchenStaff()
+	wait_staff = WaitStaff()
+	manager = Manager()
+	regular_user = RegularUser()
 
-	subject.some_business_logic()
-	subject.some_business_logic()
+	# Add users to the database
+	session.add(kitchen_staff)
+	session.add(wait_staff)
+	session.add(manager)
+	session.add(regular_user)
 
-	subject.detach(observer_a)
+	menu_items = [
+		MenuItem(name="Spaghetti Bolognese", price=12.99),
+		MenuItem(name="Margherita Pizza", price=10.99),
+		MenuItem(name="Caesar Salad", price=8.99)
+	]
 
-	subject.some_business_logic()
+	# Add menu items to the database
+	for item in menu_items:
+		session.add(item)
+
+	# Commit the changes
+	session.commit()
+
+	# Query all users and print their types
+	all_users = session.query(User).all()
+	for user in all_users:
+		print(user)

@@ -1,17 +1,14 @@
 from sqlalchemy import Column, Integer, String, Float, create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.orm import sessionmaker
 from dataclasses import dataclass
-
-class Base(DeclarativeBase):
-	pass
+from db import Base
 
 @dataclass
 class MenuItem(Base):
 	__tablename__ = 'menu_items'
 
 	id: int = Column(Integer, primary_key=True)
-	name: str = Column(String)
-	category: str = Column(String)
+	name: str = Column(String, unique=True)
 	price: float = Column(Float)
 
 
@@ -28,9 +25,9 @@ if __name__ == "__main__":
 
 	# Create some menu items
 	menu_items = [
-		MenuItem(name="Spaghetti Bolognese", category="Pasta", price=12.99),
-		MenuItem(name="Margherita Pizza", category="Pizza", price=10.99),
-		MenuItem(name="Caesar Salad", category="Salad", price=8.99)
+		MenuItem(name="Spaghetti Bolognese", price=12.99),
+		MenuItem(name="Margherita Pizza", price=10.99),
+		MenuItem(name="Caesar Salad", price=8.99)
 	]
 
 	# Add menu items to the database

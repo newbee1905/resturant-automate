@@ -1,16 +1,19 @@
 from sqlalchemy import Column, Integer, String, Float, create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
-from dataclasses import dataclass
 
-class Base(DeclarativeBase):
-	pass
+from sqlalchemy.orm import sessionmaker
+
+from dataclasses import dataclass
+from db import Base
+
+# from observer import KitchenStaffObserver, WaitStaffObserver
 
 @dataclass
 class User(Base):
 	__tablename__ = 'users'
 
 	id: int = Column(Integer, primary_key=True)
-	type: str = Column(String)
+	name: str = Column(String, index=True)
+	type: str = Column(String, index=True)
 
 	__mapper_args__ = {
 		'polymorphic_on': 'type',

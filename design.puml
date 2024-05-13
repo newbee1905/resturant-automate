@@ -1,5 +1,4 @@
 @startuml
-
 ' Define interfaces for the Observer pattern
 interface Observer {
 }
@@ -8,10 +7,10 @@ interface Subject {
 }
 
 ' Define concrete classes for the Observer pattern
-class WaitStaffObserver implements Observer {
+class WaitStaffObserver {
 }
 
-class KitchenStaffObserver implements Observer {
+class KitchenStaffObserver {
 }
 
 class OrderSubject implements Subject {
@@ -58,45 +57,12 @@ class Manager {
 class RegularUser {
 }
 
-' Link users to Observer roles
-WaitStaffObserver -down-|> WaitStaff
-KitchenStaffObserver -down-|> KitchenStaff
-
-' Connect the menu items to the order and states
-OrderItemContext -left-> ItemState
-OrderItemContext -right-> OrderItemSubject
-OrderItemContext --> OrderItem: contains
-OrderItem --> MenuItem : include
-
-Order --> OrderItem : contains
-
-Order -right-> OrderSubject
-
-' Link Subject to Observers explicitly
-OrderSubject "1" -down-> "*" Observer : notifies >
-OrderItemSubject "1" -right-> "*" Observer : notifies >
-
-' Composite pattern relations for user
-User <|-- WaitStaff
-User <|-- KitchenStaff
-User <|-- Manager
-User <|-- RegularUser
-
 ' Define Singleton for Analytics
 class Analytics {
 }
 
-Analytics <-down- Manager
-
 class OrderFactory {
 }
-
-OrderFactory --> Order : Creates
-
-' Link WaitStaff to creating OrderItem
-WaitStaff --> OrderFactory : Uses
-
-Order -> OrderItemContext : contains
 
 interface OrderState {
 }
@@ -113,6 +79,45 @@ class Paying implements OrderState {
 class Paid implements OrderState {
 }
 
-Order -> OrderState
+' Composite pattern relations for user
+User <|-- WaitStaff
+User <|-- KitchenStaff
+User <|-- Manager
+User <|-- RegularUser
+
+Analytics <-up- Manager
+
+' Link WaitStaff to creating OrderItem
+RegularUser -down-> OrderFactory : Uses
+
+OrderFactory -down-> Order : Creates
+
+Order -down-> OrderItemContext : contains
+
+' Link users to Observer roles
+WaitStaffObserver -up-|> WaitStaff
+KitchenStaffObserver -up-|> KitchenStaff
+WaitStaffObserver .down.|> Observer
+KitchenStaffObserver .down.|> Observer
+
+' Link Subject to Observers explicitly
+OrderSubject "1" -up-> "*" Observer : notifies >
+OrderItemSubject "1" -up-> "*" Observer : notifies >
+
+' Connect the menu items to the order and states
+OrderItemContext -left-> ItemState
+OrderItemContext -right-> OrderItemSubject
+OrderItemContext --> OrderItem: contains
+
+OrderItem -down-> MenuItem : include
+
+Order --> OrderItem : contains
+
+Order -right-> OrderSubject
+
+
+Order -left-> OrderState
+
+Order -down-> Receipt : for
 
 @enduml

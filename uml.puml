@@ -1,138 +1,35 @@
 @startuml
 
-' Define interfaces for the Observer pattern
-interface Observer {
-	+update(item_name: String, state: String)
-}
+User *-- WaitStaff
+User *-- KitchenStaff
+User *-- Manager
+User *-- RegularUser
 
-interface Subject {
-	+attach(observer: Observer)
-	+detach(observer: Observer)
-	+notify(item_name: String, state: String)
-}
+Manager -down-> Analytic : use
 
-' Define concrete classes for the Observer pattern
-class WaitStaffObserver implements Observer {
-	+update(item_name: String, state: String)
-}
+RegularUser "1" -down-> "1..n" Order : create
+Order "1" -- "1..n" Receipt : for
 
-class KitchenStaffObserver implements Observer {
-	+update(item_name: String, state: String)
-}
+KitchenStaff "1" -down-> Order : update
+WaitStaff "1" -down-> Order : update
 
-class OrderSubject implements Subject {
-	-observers: List<Observer>
-	+attach(observer: Observer)
-	+detach(observer: Observer)
-	+notify(item_name: String, state: String)
-}
+Order "1" o-- "1..n" OrderItem : contains
+Order "1" --> "1" OrderState: has
+Order "1..n" ---> "1" Table: in
 
-' Define interfaces and classes for the State pattern for MenuItems
-interface ItemState {
-	+handle(context: OrderItemContext)
-}
+Reserving .up.|> OrderState
+Serving .up.|> OrderState
+Paying .up.|> OrderState
+Paid .up.|> OrderState
 
-class WaitingToBeCooked implements ItemState {
-	+handle(context: OrderItemContext)
-}
+OrderItem -left-> MenuItem
+OrderItem "1" -- "1" OrderItemState : has
 
-class Cooking implements ItemState {
-	+handle(context: OrderItemContext)
-}
 
-class Cooked implements ItemState {
-	+handle(context: OrderItemContext)
-}
-
-class ReadyForDelivery implements ItemState {
-	+handle(context: OrderItemContext)
-}
-
-' Define the OrderItemContext
-class OrderItemContext {
-	-state: ItemState
-	-subject: Subject
-	-menu_item: MenuItem
-	-note: String
-	+set_state(state: ItemState)
-	+request()
-	+notify_observers()
-}
-
-' Define Composite pattern for menu items
-abstract MenuItem {
-	-name: String
-	+get_price(): double
-}
-
-class SingleItem implements MenuItem {
-	-price: double
-	+get_price(): double
-}
-
-class ComboItem implements MenuItem {
-	-items: List<MenuItem>
-	+add_item(item: MenuItem)
-	+get_price(): double
-}
-
-' Define user roles
-abstract class User {
-}
-
-class KitchenStaff {
-}
-
-class WaitStaff {
-}
-
-class Manager {
-	+check_order_analytics()
-	+check_crowded_times()
-	+update_menu_item()
-}
-
-class RegularUser {
-}
-
-' Link users to Observer roles
-WaitStaffObserver -down-|> WaitStaff
-KitchenStaffObserver -down-|> KitchenStaff
-
-' Connect the menu items to the order and states
-OrderItemContext -left-> ItemState
-OrderItemContext -right-> OrderSubject
-OrderItemContext --> MenuItem : contains
-
-' Composite pattern relations
-MenuItem <|-- SingleItem
-MenuItem <|-- ComboItem
-
-' Link Subject to Observers explicitly
-OrderSubject "1" -right-> "*" Observer : notifies >
-
-' Composite pattern relations for user
-User <|-- WaitStaff
-User <|-- KitchenStaff
-User <|-- Manager
-User <|-- RegularUser
-
-' Define Singleton for Analytics
-class Analytics {
-	-instance: Analytics
-	+get_instance(): Analytics
-}
-
-Analytics <-down- Manager
-
-class OrderItemContextFactory {
-	+create_order_item_context(menu_item: MenuItem, note: String): OrderItemContext
-}
-
-OrderItemContextFactory --> OrderItemContext
-
-' Link WaitStaff to creating OrderItem
-WaitStaff --> OrderItemContextFactory : Creates
-
+Queueing .up.|> OrderItemState
+Cooking .up.|> OrderItemState
+Cooked .up.|> OrderItemState
+Served .up.|> OrderItemState
 
 @enduml
+
