@@ -2,7 +2,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
-from order import OrderItem
+from models.order import OrderItem
 
 @dataclass
 class OrderItemContext:

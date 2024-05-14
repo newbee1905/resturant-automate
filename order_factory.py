@@ -2,8 +2,8 @@ from dataclasses import dataclass, field
 from typing import List
 
 from order_context import Queueing, OrderItemContext
-from order import Order, OrderItem
-from menu_item import MenuItem
+from models.order import Order, OrderItem
+from models.menu_item import MenuItem
 
 from sqlalchemy.orm import Session
 

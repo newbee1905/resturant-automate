@@ -4,10 +4,10 @@ from typing import List
 from sqlalchemy import Column, Integer, String, ForeignKey, create_engine
 from sqlalchemy.orm import relationship, Mapped
 
-from user import RegularUser
 from db import Base
 
-from menu_item import MenuItem
+from .user import RegularUser
+from .menu_item import MenuItem
 
 from dataclasses import dataclass
 

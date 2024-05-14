@@ -2,9 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db import Base
 
-from user import RegularUser
-from menu_item import MenuItem
-from order import Order, OrderItem
+from models.user import RegularUser
+from models.menu_item import MenuItem
+from models.order import Order, OrderItem
 from order_factory import OrderFactory
 
 if __name__ == "__main__":
@@ -30,24 +30,10 @@ if __name__ == "__main__":
 
 	session.commit()
 
-	# order = Order(customer_id=regular_user.id)
-	# session.add(order)
-
-	# session.commit()
-
-	# items = ["Spaghetti Bolognese", "Spaghetti Bolognese", "Caesar Salad"]
 	items = [1, 1, 2]
-	# order_items = [OrderItem(order_id=order.id,  item_id=item_id) for item_id in items]
-	# for order_item in order_items:
-	# 	session.add(order_item)
-
-	# session.commit()
 
 	print(menu_items)
 	print(regular_user)
-
-	# print(order_items)
-	# print(order)
 
 	f = OrderFactory(session)
 
