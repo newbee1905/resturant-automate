@@ -12,7 +12,9 @@ class User(Base):
 	__tablename__ = 'users'
 
 	id: int = Column(Integer, primary_key=True)
+	email: str = Column(String, unique=True)
 	name: str = Column(String, index=True)
+	password: str = Column(String)
 	type: str = Column(String, index=True)
 
 	__mapper_args__ = {
@@ -25,17 +27,17 @@ class RegularUser(User):
 		'polymorphic_identity': 'regular_user',
 	}
 
-@dataclass
-class KitchenStaff(User):
-	__mapper_args__ = {
-		'polymorphic_identity': 'kitchen_staff',
-	}
-
-@dataclass
-class WaitStaff(User):
-	__mapper_args__ = {
-		'polymorphic_identity': 'wait_staff',
-	}
+# @dataclass
+# class KitchenStaff(User):
+# 	__mapper_args__ = {
+# 		'polymorphic_identity': 'kitchen_staff',
+# 	}
+# 
+# @dataclass
+# class WaitStaff(User):
+# 	__mapper_args__ = {
+# 		'polymorphic_identity': 'wait_staff',
+# 	}
 
 @dataclass
 class Manager(User):
@@ -67,8 +69,8 @@ if __name__ == "__main__":
 	session = Session()
 
 	# Create instances of users
-	kitchen_staff = KitchenStaff()
-	wait_staff = WaitStaff()
+	# kitchen_staff = KitchenStaff()
+	# wait_staff = WaitStaff()
 	manager = Manager()
 	regular_user = RegularUser()
 
