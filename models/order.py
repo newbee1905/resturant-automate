@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List
+import enum
 
-from sqlalchemy import Column, Integer, String, ForeignKey, create_engine
+from sqlalchemy import Column, Integer, String, ForeignKey, create_engine, Enum
 from sqlalchemy.orm import relationship, Mapped
 
 from db import Base
@@ -11,6 +12,22 @@ from .menu_item import MenuItem
 
 from dataclasses import dataclass
 
+class OrderItemState(enum.IntEnum):
+	Queueing = 1
+	Cooking = 2
+	Cooked = 3
+	Served = 4
+
+OrderItemStates = list(OrderItemState)
+
+class OrderState(enum.IntEnum):
+	Reserving = 1
+	Paid = 2
+	Serving = 3
+	Served = 4
+
+OrderStates = list(OrderState)
+
 @dataclass
 class OrderItem(Base):
 	__tablename__ = "order_items"
@@ -18,6 +35,7 @@ class OrderItem(Base):
 
 	id: int = Column(Integer, primary_key=True)
 	order_id: int = Column(Integer, ForeignKey("orders.id"))
+	state: OrderItemState = Column(Enum(OrderItemState), default=OrderItemState.Queueing)
 
 	item_id: int = Column(Integer, ForeignKey("menu_items.id"))
 	item: Mapped = relationship("MenuItem", foreign_keys=[item_id])
@@ -28,18 +46,8 @@ class Order(Base):
 	__allow_unmapped__ = True
 
 	id: int = Column(Integer, primary_key=True)
+	state: OrderState = Column(Enum(OrderState), default=OrderState.Paid)
+
 	customer_id: int = Column(Integer, ForeignKey("users.id"))
 	customer: Mapped = relationship("RegularUser", foreign_keys=[customer_id])
 	items: List[Mapped] = relationship("OrderItem", backref="order")
-
-# if __name__ == "__main__":
-# 	menu_items = ["pizza", "burger"]
-# 	f = OrderFactory()
-# 	print(f.create_order(menu_items))
-
-if __name__ == "__main__":
-	# Create an in-memory SQLite database
-	engine = create_engine('sqlite:///:memory:', echo=True)
-
-	# Create the table schema
-	Base.metadata.create_all(engine)

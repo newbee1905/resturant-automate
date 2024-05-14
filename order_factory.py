@@ -12,7 +12,6 @@ class OrderFactory():
 	_instance = None
 
 	session: Session
-	default_state = Queueing
 
 	def __new__(cls, *args, **kwargs):
 		if not cls._instance:
@@ -27,12 +26,12 @@ class OrderFactory():
 		self.session.add(order)
 		self.session.commit()
 
-		order_item_contexts = []
+		order_items = []
 		for item_id in item_ids:
 			order_item = OrderItem(order_id=order.id,  item_id=item_id)
 			self.session.add(order_item)
-			order_item_contexts.append(OrderItemContext(self.default_state(), order_item))
+			order_items.append(order_item)
 
 		self.session.commit()
-
-		return order_item_contexts
+		
+		return order_items

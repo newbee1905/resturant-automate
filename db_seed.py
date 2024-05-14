@@ -5,20 +5,26 @@
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db import Base, SessionLocal, engine
+from db import Base, SessionLocal
+from db import engine
 
 from models.user import RegularUser, Manager
 from models.menu_item import MenuItem
-from models.order import Order, OrderItem
+from models.order import Order, OrderItem, OrderItemStates
 from order_factory import OrderFactory
 
 import utils
 
 if __name__ == "__main__":
+	# engine = create_engine('sqlite:///:memory:', echo=True)
+
 	Base.metadata.create_all(engine)
 
 	# Create a session to interact with the database
 	session = SessionLocal()
+	# Session = sessionmaker(bind=engine)
+	# session = Session()
+
 
 	menu_items = [
 		MenuItem(name="Spaghetti Bolognese", price=12.99),
@@ -46,5 +52,9 @@ if __name__ == "__main__":
 
 	# f = OrderFactory(session)
 
-	# order_item_contexts = f.create_order(regular_user.id, items)
-	# print(order_item_contexts)
+	# order_items = f.create_order(regular_user.id, items)
+	# print(order_items)
+
+	# order_items[0].state = OrderItemStates[order_items[0].state]
+	# session.commit()
+	# print(order_items[0])
