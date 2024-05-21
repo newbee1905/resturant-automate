@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from fastapi.responses import HTMLResponse, JSONResponse
 
 from db import SessionLocal
+from routers import users
 
 from schemas import user as UserSchema
 from services import user as UserService
@@ -24,50 +25,10 @@ def get_db():
 		yield db
 	finally:
 		db.close()
-
-@app.post("/users/register", response_model=UserSchema.User)
-def register(user: UserSchema.UserForm, db: Session = Depends(get_db)):
-	db_user = UserService.get_user_by_email(db, email=user.email)
-	if db_user:
-		raise HTTPException(status_code=400, detail="Email already registered")
-	return UserService.create_user(db=db, user=user)
-
-@app.post("/users/login", response_model=UserSchema.User)
-def login(user: UserSchema.UserForm, db: Session = Depends(get_db)):
-	db_user = UserService.get_user_by_email(db, email=user.email)
-	if db_user is None:
-		raise HTTPException(status_code=404, detail="User not found")
-	try:
-		utils.ph.verify(db_user.password, user.password)
-	except:
-		raise HTTPException(status_code=401, detail="Wrong password")
-	payload = {
-		"email": db_user.email,
-		"id": db_user.id,
-		"name": db_user.name,
-		"type": db_user.type,
-	}
-	response = JSONResponse(content=payload)
-	token = utils.jwt_encode(payload)
-	response.set_cookie(key="access_token", value=token, httponly=True)
 	return response
 
-@app.get("/users/auth", response_model=UserSchema.User)
-def auth(access_token: Annotated[str | None, Cookie()] = None):
-	try:
-		user = utils.jwt_decode(access_token)
-	except:
-		raise HTTPException(status_code=401, detail="Invalid Token")
+app.include_router(users.router)
 
-	exp = user["exp"]
-	user.pop("exp")
-	response = JSONResponse(content=user)
-
-	if exp - datetime.now(tz=timezone.utc).timestamp() < 5 * 24 * 60 * 60:
-		token = utils.jwt_encode(user)
-		response.set_cookie(key="access_token", value=token, httponly=True)
-
-	return response
 
 @app.get("/menu/{id}", response_model=MenuItemSchema.MenuItem)
 def get_menu_item(id: int, db: Session = Depends(get_db)):
@@ -95,3 +56,20 @@ def create_menu_item(menu_item: MenuItemSchema.MenuItemForm, db: Session = Depen
 		raise HTTPException(status_code=400, detail="Menu Item already registered")
 
 	return MenuItemService.create_menu_item(db=db, menu_item=menu_item)
+
+@app.put("/menu/", response_model=MenuItemSchema.MenuItem)
+def create_menu_item(menu_item: MenuItemSchema.MenuItemUpdate, db: Session = Depends(get_db), access_token: Annotated[str | None, Cookie()] = None):
+	try:
+		user = utils.jwt_decode(access_token)
+	except:
+		raise HTTPException(status_code=401, detail="Unauthorized to edit menu item")
+	
+	if user["type"] != "manager":
+		raise HTTPException(status_code=401, detail="Unauthorized to edit menu item")
+
+	db_menu_item = MenuItemService.get_menu_item_by_id(db, id=menu_item.id)
+	if db_menu_item is None:
+		raise HTTPException(status_code=400, detail="Menu Item not found")
+
+	return MenuItemService.edit_menu_item(db=db, menu_item=menu_item)
+
