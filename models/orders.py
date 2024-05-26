@@ -2,15 +2,16 @@ from dataclasses import dataclass, field
 from typing import List
 import enum
 
-from sqlalchemy import Column, Integer, String, ForeignKey, create_engine, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, create_engine, Enum, DateTime, ForeignKeyConstraint
 from sqlalchemy.orm import relationship, Mapped
 
 from db import Base
 
-from .user import RegularUser
-from .menu_item import MenuItem
+from .users import RegularUser
+from .menu_items import MenuItem
 
 from dataclasses import dataclass
+from datetime import datetime
 
 class OrderItemState(enum.IntEnum):
 	Queueing = 1
@@ -35,10 +36,13 @@ class OrderItem(Base):
 
 	id: int = Column(Integer, primary_key=True)
 	order_id: int = Column(Integer, ForeignKey("orders.id"))
+	note: str = Column(String)
 	state: OrderItemState = Column(Enum(OrderItemState), default=OrderItemState.Queueing)
-
 	item_id: int = Column(Integer, ForeignKey("menu_items.id"))
 	item: Mapped = relationship("MenuItem", foreign_keys=[item_id])
+	ForeignKeyConstraint(
+		["item_id"], ["menu_items.id"]
+	),
 
 @dataclass
 class Order(Base):
@@ -51,3 +55,4 @@ class Order(Base):
 	customer_id: int = Column(Integer, ForeignKey("users.id"))
 	customer: Mapped = relationship("RegularUser", foreign_keys=[customer_id])
 	items: List[Mapped] = relationship("OrderItem", backref="order")
+	created_at = Column(DateTime, default=datetime.utcnow, index=True)

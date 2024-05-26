@@ -9,3 +9,8 @@ class MenuItem(MenuItemForm):
 
 	class Config:
 		orm_mode = True
+
+class MenuItemUpdate(BaseModel):
+	id: int
+	name: str | None = None
+	price: float | None = None

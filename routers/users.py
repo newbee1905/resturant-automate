@@ -1,8 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import JSONResponse
 
 from dependencies import get_user_from_access_token, get_db
 from sqlalchemy.orm import Session
-from schemas import user as UserSchema
+
+from schemas import users as UserSchema
+from services import users as UserService
+
+import utils
 
 router = APIRouter(
 	prefix="/users",
@@ -11,8 +16,6 @@ router = APIRouter(
 	responses={404: {"description": "Not found"}},
 )
 
-
-# fake_items_db = {"plumbus": {"name": "Plumbus"}, "gun": {"name": "Portal Gun"}}
 
 @router.post("/register", response_model=UserSchema.User)
 def register(user: UserSchema.UserForm, db: Session = Depends(get_db)):

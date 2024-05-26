@@ -9,7 +9,7 @@ class MenuItem(Base):
 
 	id: int = Column(Integer, primary_key=True)
 	name: str = Column(String, unique=True)
-	price: float = Column(Float)
+	price: float = Column(Float,)
 
 
 if __name__ == "__main__":

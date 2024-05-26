@@ -1,9 +1,11 @@
 from typing import Annotated
 
-from schemas import user as UserSchema
+from schemas import users as UserSchema
 
 from fastapi import Cookie, HTTPException
 from db import SessionLocal
+
+from order_factory import OrderFactory
 
 async def get_user_from_access_token(access_token: Annotated[str | None, Cookie()] = None) -> UserSchema.User:
 	try:
@@ -17,5 +19,13 @@ async def get_db():
 	db = SessionLocal()
 	try:
 		yield db
+	finally:
+		db.close()
+
+async def get_order_factory():
+	db = SessionLocal()
+	order_factory = OrderFactory(session=db)
+	try:
+		yield order_factory
 	finally:
 		db.close()

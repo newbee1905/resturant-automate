@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 
 # from . import models, schemas
 
-from models.user import User
-from schemas import user as schemas 
+from models.users import User
+from schemas import users as schemas 
 
 import utils
 

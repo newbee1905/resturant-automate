@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 
 # from . import models, schemas
 
-from models.menu_item import MenuItem
-from schemas import menu_item as schemas 
+from models.menu_items import MenuItem
+from schemas import menu_items as schemas 
 
 import utils
 
@@ -13,8 +13,10 @@ def get_menu_item_by_id(db: Session, id: int):
 def get_menu_item_by_name(db: Session, name: str):
 	return db.query(MenuItem).filter(MenuItem.name == name).first()
 
-def get_menu_items(db: Session, limit_value = 100, offset_value = 0):
-	return db.query(MenuItem).limit(limit_value).offset(offset_value).all()
+def get_menu_items(db: Session, skip, limit):
+	query = db.query(MenuItem)
+
+	return query.limit(limit).offset(skip).all()
 
 def create_menu_item(db: Session, menu_item: schemas.MenuItemForm):
 	try:

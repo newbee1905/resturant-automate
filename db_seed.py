@@ -8,9 +8,9 @@ from sqlalchemy.orm import sessionmaker
 from db import Base, SessionLocal
 from db import engine
 
-from models.user import RegularUser, Manager
-from models.menu_item import MenuItem
-from models.order import Order, OrderItem, OrderItemStates
+from models.users import RegularUser, Manager
+from models.menu_items import MenuItem
+from models.orders import Order, OrderItem, OrderItemStates
 from order_factory import OrderFactory
 
 import utils
