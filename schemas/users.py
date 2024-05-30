@@ -7,11 +7,12 @@ class UserBase(BaseModel):
 class UserForm(UserBase):
 	password: str
 
-
-class User(UserBase):
-	id: int
+class UserRegisterForm(UserForm):
 	name: str
 	type: str
+
+class User(UserRegisterForm):
+	id: int
 
 	class Config:
 		orm_mode = True

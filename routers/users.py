@@ -18,7 +18,7 @@ router = APIRouter(
 
 
 @router.post("/register", response_model=UserSchema.User)
-def register(user: UserSchema.UserForm, db: Session = Depends(get_db)):
+def register(user: UserSchema.UserRegisterForm, db: Session = Depends(get_db)):
 	db_user = UserService.get_user_by_email(db, email=user.email)
 	if db_user:
 		raise HTTPException(status_code=400, detail="Email already registered")
