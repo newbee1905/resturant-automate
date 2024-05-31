@@ -19,9 +19,9 @@ def get_orders(db: Session, skip, limit, from_date, to_date):
 
 	return query.limit(limit).offset(skip).all()
 
-def create_order(factory: OrderFactory, orders: schemas.OrderForm) -> schemas.Order:
+def create_order(factory: OrderFactory, customer_id: int, orders: schemas.OrderForm) -> schemas.Order:
 	try:
-		db_order = factory.create_order(orders.customer_id, orders.items, orders.notes)
+		db_order = factory.create_order(customer_id, orders.items)
 	except:
 		raise
 	return db_order

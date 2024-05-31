@@ -2,20 +2,21 @@ from pydantic import BaseModel
 from typing import List
 from datetime import datetime
 
-from .menu_items import MenuItem
+from .menu_items import MenuItemData
+from .users import UserData
 
 class OrderForm(BaseModel):
-	customer_id: int
 	items: List[int]
-	notes: List[str]
 
 class OrderItem(BaseModel):
 	order_id: int
 	state: int
 	item_id: int
-	item: MenuItem
+	item: MenuItemData
 
 class Order(BaseModel):
+	id: int
 	customer_id: int
+	customer: UserData
 	items: List[OrderItem]
 	created_at: datetime

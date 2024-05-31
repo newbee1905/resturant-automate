@@ -36,13 +36,9 @@ class OrderItem(Base):
 
 	id: int = Column(Integer, primary_key=True)
 	order_id: int = Column(Integer, ForeignKey("orders.id"))
-	note: str = Column(String)
 	state: OrderItemState = Column(Enum(OrderItemState), default=OrderItemState.Queueing)
 	item_id: int = Column(Integer, ForeignKey("menu_items.id"))
 	item: Mapped = relationship("MenuItem", foreign_keys=[item_id])
-	ForeignKeyConstraint(
-		["item_id"], ["menu_items.id"]
-	),
 
 @dataclass
 class Order(Base):

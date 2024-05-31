@@ -7,6 +7,8 @@ from db import SessionLocal
 
 from order_factory import OrderFactory
 
+import utils
+
 async def get_user_from_access_token(access_token: Annotated[str | None, Cookie()] = None) -> UserSchema.User:
 	try:
 		user = utils.jwt_decode(access_token)

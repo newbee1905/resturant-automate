@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, create_engine
+from sqlalchemy import Column, Integer, String, Float, create_engine, LargeBinary
 from sqlalchemy.orm import sessionmaker
 from dataclasses import dataclass
 from db import Base
@@ -10,6 +10,7 @@ class MenuItem(Base):
 	id: int = Column(Integer, primary_key=True)
 	name: str = Column(String, unique=True)
 	price: float = Column(Float,)
+	thumbnail = Column(LargeBinary, nullable=False)
 
 
 if __name__ == "__main__":

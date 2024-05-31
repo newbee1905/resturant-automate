@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from schemas import users as UserSchema
 from services import users as UserService
 
+from datetime import datetime, timezone
 import utils
 
 router = APIRouter(
@@ -53,5 +54,13 @@ def auth(user: UserSchema.User = Depends(get_user_from_access_token)):
 	if exp - datetime.now(tz=timezone.utc).timestamp() < 5 * 24 * 60 * 60:
 		token = utils.jwt_encode(user)
 		response.set_cookie(key="access_token", value=token, httponly=True)
+
+	return response
+
+@router.get("/signout")
+def signout():
+	response = JSONResponse(content={"message": "Sign out successful"})
+
+	response.set_cookie(key="access_token", value="", httponly=True)
 
 	return response
